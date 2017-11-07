@@ -72,62 +72,67 @@ void get_neighbour (node ** matrix, short int coordinate[2], short int size)
 //************************************************************************************ BFS SUCCESSOR ***************************************************************************************
 void BfsSuccessor(node ** &matrix, short int size, short int * StartCoordinate, short int SemiGoal[2]) {
     get_neighbour(matrix, StartCoordinate, size - 1);
+    temp[0] = 0;
+    for (int i = 0; i < 4; i++) {
+        if (neighbours[i][0] != -1)
+            temp[0]++;
+    }
     if (temp[0] == 1) {
-        if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[0]) {
-            matrix[StartCoordinate[0] - 1][StartCoordinate[1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
+        if (neighbours[0][0] != -1) {
+            matrix[neighbours[0][0]][neighbours[0][1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
         }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[1]) {
-            matrix[StartCoordinate[0] + 1][StartCoordinate[1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
+        else if (neighbours[1][0] != -1) {
+            matrix[neighbours[1][0]][neighbours[1][1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
         }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[2]) {
-            matrix[StartCoordinate[0]][StartCoordinate[1] - 1].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
+        else if (neighbours[2][0] != -1) {
+            matrix[neighbours[2][0]][neighbours[2][1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
         }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[3]) {
-            matrix[StartCoordinate[0]][StartCoordinate[1] + 1].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
+        else if (neighbours[3][0] != -1) {
+            matrix[neighbours[3][0]][neighbours[3][1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
         }
     }
     
     else if(temp[0] == 2) {
-        if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[0]) {
-            bfsQueue.push(matrix[StartCoordinate[0] - 1][StartCoordinate[1]]);
+        if (neighbours[0][0] != -1) {
+                bfsQueue.push(matrix[neighbours[0][0]][neighbours[0][1]]);
         }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[1]) {
-            bfsQueue.push(matrix[StartCoordinate[0] + 1][StartCoordinate[1]]);
-        }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[2]) {
-            bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] - 1]);
-        }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[3]) {
-            bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] + 1]);
-        }
-    }
-    
-    else if(temp[0] == 3) {
-        if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[0]) {
-            bfsQueue.push(matrix[StartCoordinate[0] - 1][StartCoordinate[1]]);
-        }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[1]) {
-            matrix[StartCoordinate[0] + 1][StartCoordinate[1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
-            bfsQueue.push(matrix[StartCoordinate[0] + 1][StartCoordinate[1]]);
-        }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[2]) {
-            bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] - 1]);
-        }
-        else if (matrix[StartCoordinate[0]][StartCoordinate[1]].neighbours[3]) {
-            bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] + 1]);
-        }
-    }
-    
-    else if(temp[0] == 4) {
-        bfsQueue.push(matrix[StartCoordinate[0] - 1][StartCoordinate[1]]);
-        bfsQueue.push(matrix[StartCoordinate[0] + 1][StartCoordinate[1]]);
-        bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] - 1]);
-        bfsQueue.push(matrix[StartCoordinate[0]][StartCoordinate[1] + 1]);
-
-    }
-    
-    
-}
+        else if (neighbours[1][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[1][0]][neighbours[1][1]]);
+             }
+             else if (neighbours[2][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[2][0]][neighbours[2][1]]);
+             }
+             else if (neighbours[3][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[3][0]][neighbours[3][1]]);
+             }
+             }
+             
+             else if(temp[0] == 3) {
+             if (neighbours[0][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+             }
+             else if (neighbours[1][0] != -1) {
+             matrix[StartCoordinate[0] + 1][StartCoordinate[1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
+                 bfsQueue.push(matrix[neighbours[1][0]][neighbours[1][1]]);
+             }
+             else if (neighbours[2][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[2][0]][neighbours[2][1]]);
+             }
+             else if (neighbours[3][0] != -1) {
+                 bfsQueue.push(matrix[neighbours[3][0]][neighbours[3][1]]);
+             }
+             }
+             
+             else if(temp[0] == 4) {
+                 bfsQueue.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+                 bfsQueue.push(matrix[neighbours[1][0]][neighbours[1][1]]);
+                 bfsQueue.push(matrix[neighbours[2][0]][neighbours[2][1]]);
+                 bfsQueue.push(matrix[neighbours[3][0]][neighbours[3][1]]);
+             
+             }
+             
+             
+     }
 
 //************************************************************************************ DFS SUCCESSOR **************************************************************************************
 void DfsSuccessor(node ** &matrix, short int size, short int * StartCoordinate, short int SemiGoal[2]) {
@@ -157,13 +162,13 @@ void DfsSuccessor(node ** &matrix, short int size, short int * StartCoordinate, 
             dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
         }
         else if (neighbours[1][0] != -1) {
-            dfsStack.push(matrix[matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[1][0]][neighbours[1][1]]);
         }
         else if (neighbours[2][0] != -1) {
-            dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[2][0]][neighbours[2][1]]);
         }
         else if (neighbours[3][0] != -1) {
-            dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[3][0]][neighbours[3][1]]);
         }
     }
 
@@ -173,21 +178,21 @@ void DfsSuccessor(node ** &matrix, short int size, short int * StartCoordinate, 
         }
         else if (neighbours[1][0] != -1) {
             matrix[StartCoordinate[0] + 1][StartCoordinate[1]].color = matrix[StartCoordinate[0]][StartCoordinate[1]].color;
-            dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[1][0]][neighbours[1][1]]);
         }
         else if (neighbours[2][0] != -1) {
-            dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[2][0]][neighbours[2][1]]);
         }
         else if (neighbours[3][0] != -1) {
-            dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+            dfsStack.push(matrix[neighbours[3][0]][neighbours[3][1]]);
         }
     }
 
     else if(temp[0] == 4) {
-        dfsStack.push(matrix[StartCoordinate[0] - 1][StartCoordinate[1]]);
-        dfsStack.push(matrix[StartCoordinate[0] + 1][StartCoordinate[1]]);
-        dfsStack.push(matrix[StartCoordinate[0]][StartCoordinate[1] - 1]);
-        dfsStack.push(matrix[StartCoordinate[0]][StartCoordinate[1] + 1]);
+        dfsStack.push(matrix[neighbours[0][0]][neighbours[0][1]]);
+        dfsStack.push(matrix[neighbours[1][0]][neighbours[1][1]]);
+        dfsStack.push(matrix[neighbours[2][0]][neighbours[2][1]]);
+        dfsStack.push(matrix[neighbours[3][0]][neighbours[3][1]]);
 
     }
     
@@ -286,11 +291,11 @@ int main() {
 }
 
 //************************************************************************************ IS GOALs *******************************************************************************************
-bool isSemiGoal (node ** matrix, short int start[2], short int target[2]) {
+/* bool isSemiGoal (node ** matrix, short int start[2], short int target[2]) {
     char check = matrix[start[0]][start[1]].color;
     short int counter;
     while (start != target) {
-        counter = get_neighbour(matrix[start[0]][start[1]].neighbours, matrix, start, size - 1);
+        counter = get_neighbour(matrix, start, size - 1);
         if (counter == 0)
             return false;
         
@@ -316,7 +321,7 @@ bool isSemiGoal (node ** matrix, short int start[2], short int target[2]) {
         }
     }
     return true;
-}
+}*/
 
 //bool isGoal(node ** matrix) {
 //    for (auto i = 0; i < size; i++)
