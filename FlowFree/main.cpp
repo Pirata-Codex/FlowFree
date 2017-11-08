@@ -18,7 +18,7 @@ using std::vector;
 short int temp[2];
 short int ** startCoordinates;
 short int ** targetCoordinates;
-short int neighbours[4][2];
+short int ** neighbours;
 short int size;
 short int colors;
 
@@ -29,19 +29,20 @@ struct node {
     
 public:
     void set(int i, int j) {
-        temp.i = i; temp.j = j;
+        this->i = i; this->j = j;
     }
 };
 
 bool isGoal();
-bool isSemiGoal();
+bool isSemiGoal(node **, short int);
 void BfsSuccessor(node **&, queue<node>&, short int , short int * , short int);
+void print(node **);
 
 // ********************************************************************** This will get all the neighbours ********************************************************************************
 void get_neighbour (node ** matrix, short int coordinate[2], short int size)
 {
     //up, down, left, right
-    for (auto i = 0; i < 4; i++) {
+    for (auto i = 0; i < colors; i++) {
         for (auto j = 0; j < 2; j++) {
             neighbours[i][j] = -1;
         }
@@ -78,13 +79,22 @@ void get_neighbour (node ** matrix, short int coordinate[2], short int size)
     }
 }
 
+vector<node> sendNeighbour (node ** &matrix, short int * coordinate) {
+    get_neighbour(matrix, coordinate, size - 1);
+    vector<node> shit;
+    for (int i = 0; i < colors; i++)
+        if (neighbours[i][0] != -1)
+            shit.insert(shit.begin(), matrix[neighbours[i][0]][neighbours[i][1]]);
+    return shit;
+}
+
 //************************************************************************************ BFS SUCCESSOR ***************************************************************************************
 void BfsSuccessor(node ** &matrix, queue<node> &bfsQueue ,short int size, short int * StartCoordinate, short int SemiGoal[2]) {
     get_neighbour(matrix, StartCoordinate, size - 1);
     temp[0] = 0;
     
 //    initializing neighbours locations
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < colors; i++) {
         if (neighbours[i][0] != -1)
             temp[0]++;
     }
@@ -169,7 +179,7 @@ void BfsSuccessor(node ** &matrix, queue<node> &bfsQueue ,short int size, short 
 void DfsSuccessor(node ** &matrix, stack<node> &dfsStack, short int size, short int * StartCoordinate, short int SemiGoal[2]) {
     get_neighbour(matrix, StartCoordinate, size - 1);
     temp[0] = 0;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < colors; i++) {
         if (neighbours[i][0] != -1)
             temp[0]++;
     }
@@ -259,7 +269,7 @@ int main() {
     
     //we should delete these temp vars
     
-    node ** array;
+    node ** array = nullptr;
     if (input)
     {
         
@@ -280,24 +290,26 @@ int main() {
         input >> colors;
         startCoordinates = new short int *[colors];
         targetCoordinates = new short int *[colors];
+        neighbours = new short int *[colors];
         for (int i = 0; i < colors; i++) {
             startCoordinates[i] = new short int[2];
             targetCoordinates[i] = new short int[2];
+            neighbours[i] = new short int[2];
         }
-        colors = 0;
+        short int colorss = 0;
         while (!input.eof()) {
             try {
                 input >> temp[0]; input >> temp[1]; //i,j
                 startCoordinates[colors][0] = temp[0]; startCoordinates[colors][1] = temp[1];
-                array[temp[0]-1][temp[1]-1].color = (char) (colors + 65);
+                array[temp[0]-1][temp[1]-1].color = (char) (colorss + 65);
                 cout << temp[0] << " ," << temp[1] << " has the color " << array[temp[0]-1][temp[1]-1].color << endl;
                 
                 input >> temp[0]; input >> temp[1];
                 targetCoordinates[colors][0] = temp[0]; targetCoordinates[colors][1] = temp[1];
-                array[temp[0]-1][temp[1]-1].color = (char) (colors + 65);
+                array[temp[0]-1][temp[1]-1].color = (char) (colorss + 65);
                 cout << temp[0] << " ," << temp[1] << " has the color " << array[temp[0]-1][temp[1]-1].color << endl;
                 
-                colors++;
+                colorss++;
                 
                 cout<<endl;
             } catch (exception e) {
@@ -343,39 +355,41 @@ int main() {
 
 vector<node**> matrixes;
 
-bool BFS(node ** matrix, queue<node> Queue, short int * Start, short int * Target)
+bool BFS(node ** matrix, short int * Start, short int * Target, short int whichColor)
 {
     if (isGoal())
+    {
+        print(matrix);
         return true;
+    }
     queue<node> bfsQueue;
     node temp;
     // Mark all the vertices as not visited
     BfsSuccessor(matrix, bfsQueue, size, Start, Target);
-    // Create a queue for BFS
-    // Mark the current node as visited and enqueue it
-    
+    // Queue is empty and the road is blocked.
+    if (bfsQueue.empty()) {
+        if (!isSemiGoal())
+            return false;
+        
+        else {
+            whichColor++;
+            BFS(matrix, startCoordinates[whichColor], targetCoordinates[whichColor], whichColor);
+        }
+    }
     // 'i' will be used to get all adjacent
     // vertices of a vertex
     
     while(!bfsQueue.empty())
     {
-        // Dequeue a vertex from queue and print it
         temp = bfsQueue.front();
-        cout << temp.color << " ";
+        node ** newMatrix = matrix;
+        newMatrix[temp.i][temp.j].color = temp.color;
+        Start[0] = temp.i; Start[1] = temp.j;
         bfsQueue.pop();
-        
-        // Get all adjacent vertices of the dequeued
-        // vertex s. If a adjacent has not been visited,
-        // then mark it visited and enqueue it
-        for (i = adj[s].begin(); i != adj[s].end(); ++i)
-        {
-            if (!visited[*i])
-            {
-                visited[*i] = true;
-                bfsQueue.push_back(*i);
-            }
-        }
+
+        BFS(newMatrix, Start, Target, whichColor);
     }
+    return false;
 }
 
 //************************************************************************************ IS GOALs *******************************************************************************************
@@ -383,16 +397,35 @@ bool BFS(node ** matrix, queue<node> Queue, short int * Start, short int * Targe
 bool isGoal(node ** matrix) {
     for (auto i = 0; i < size; i++) {
         for (auto j =0; j < size; j++) {
-            if (matrix[i][j] == '0')
-                return false
-                }
-    }
-    
-    for (auto i = 0; i < size; i++) {
-        if (isSemiGoal(node ** input, startCoordinates, targetCoordinates))
+            if (matrix[i][j].color == '0')
+                return false;
             }
+    }
+    node ** input;
+    for (auto i = 0; i < colors; i++) {
+        if (!isSemiGoal(input, colors)) {
+            return false;
+        }
+    }
+    return true;
 }
 
+bool isSemiGoal(node ** matrix, short int color) {
+    bool flag = false;
+    while (!flag) {
+        
+    }
+}
+//************************************************************************************ PRINT *******************************************************************************************
+
+void print(node ** matrix) {
+    for (auto i = 0; i < size; i++) {
+        for (auto j =0; j < size; j++) {
+            cout << matrix[i][j].color << " ";
+        }
+        cout << endl;
+    }
+}
 
 
 
