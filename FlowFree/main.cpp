@@ -21,6 +21,7 @@ short int ** targetCoordinates;
 short int ** neighbours;
 short int size;
 short int colors;
+short int c = 0;
 
 
 struct node {
@@ -371,6 +372,7 @@ bool BFS(node ** matrix, short int * Start, short int * Target, short int whichC
     queue<node> bfsQueue;
     node temp;
     // Successor will be called
+    c++;
     BfsSuccessor(matrix, bfsQueue, size, whichColor, Start, Target);
     
     // Queue is empty and the road is blocked.
@@ -383,6 +385,7 @@ bool BFS(node ** matrix, short int * Start, short int * Target, short int whichC
 //            else next color to connect
             whichColor++;
             BFS(matrix, startCoordinates[whichColor], targetCoordinates[whichColor], whichColor);
+            c++;
         }
     }
     
@@ -395,6 +398,7 @@ bool BFS(node ** matrix, short int * Start, short int * Target, short int whichC
         bfsQueue.pop();
 
         print(matrix);
+        c++;
         BFS(newMatrix, Start, Target, whichColor);
     }
     return false;
